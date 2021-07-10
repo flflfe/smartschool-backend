@@ -3,7 +3,7 @@ const { Schema: _Schema, model } = mongoose;
 const Schema = _Schema;
 
 const messagesSchema = new Schema({
-  id: { type: Number, unique: true },
+  m_id: { type: Number, unique: false },
   text: String,
   from: {
     id: String,
@@ -13,7 +13,7 @@ const messagesSchema = new Schema({
   endTime: Number,
   phrases: [
     {
-      type: String,
+      type: { type: String },
       text: String,
     },
   ],

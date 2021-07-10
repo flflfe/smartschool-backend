@@ -7,7 +7,7 @@ export const submitVideo = async (options) => {
     url: options.url,
     confidenceThreshold: 0.6,
     timezoneOffset: 0,
-    // enableSummary: true,
+    enableSummary: true,
     detectEntities: true,
     detectPhrases: true,
     enableSpeakerDiarization: true,
@@ -32,8 +32,8 @@ export const submitVideo = async (options) => {
   }
 };
 
-export const getTranscript = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getTranscript = async (conversationId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -50,8 +50,8 @@ export const getTranscript = async (conversationId) => {
   }
 };
 
-export const getTopics = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getTopics = async (conversationId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -68,8 +68,8 @@ export const getTopics = async (conversationId) => {
   }
 };
 
-export const getQuestions = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getQuestions = async (conversationId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -86,8 +86,8 @@ export const getQuestions = async (conversationId) => {
   }
 };
 
-export const getFollowups = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getFollowups = async (conversationId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -104,8 +104,8 @@ export const getFollowups = async (conversationId) => {
   }
 };
 
-export const getEntities = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getEntities = async (conversationId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -122,8 +122,8 @@ export const getEntities = async (conversationId) => {
   }
 };
 
-export const getSummary = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getSummary = async (conversationId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -140,8 +140,8 @@ export const getSummary = async (conversationId) => {
   }
 };
 
-export const getActions = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getActions = async (conversationId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -158,8 +158,8 @@ export const getActions = async (conversationId) => {
   }
 };
 
-export const checkJobStatus = async (jobId) => {
-  const token = await tokenGenerator();
+export const checkJobStatus = async (jobId, authtoken = false) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -176,8 +176,11 @@ export const checkJobStatus = async (jobId) => {
   }
 };
 
-export const getConversationDetails = async (conversationId) => {
-  const token = await tokenGenerator();
+export const getConversationDetails = async (
+  conversationId,
+  authtoken = false
+) => {
+  const token = authtoken || (await tokenGenerator());
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,

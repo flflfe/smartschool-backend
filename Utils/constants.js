@@ -22,7 +22,7 @@ export const API = {
   BASE_URL: "https://api.symbl.ai/v1/conversations/",
   LABS_BASE_URL: "https://api-labs.symbl.ai/v1/conversations/",
   SUBMIT_VIDEO:
-    "https://api-labs.symbl.ai/v1/process/video/url?detectEntities=true&enableSummary=true",
+    "https://api-labs.symbl.ai/v1/process/video/url?detectEntities=true",
   REQUEST_TOKEN: "https://api.symbl.ai/oauth2/token:generate",
   GET_CONVERSATION_DETAILS: (_, conversationId) => {
     return `${API.BASE_URL}${conversationId}`;

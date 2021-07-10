@@ -15,16 +15,17 @@ import {
 import classroomsController from "../controllers/classRoomsController.js";
 import { USER_ROLES } from "../Utils/constants.js";
 import resourcesModel from "../models/resources.js";
-import {createAndUploadTextFile} from "../services/textFileCreator.js";
+import { createAndUploadTextFile } from "../services/textFileCreator.js";
 import chatperModel from "../models/chapters.js";
 import {
   createrecording,
   getrecording,
   requestProcessing,
   checkIfCompleted,
+  getRecordingProperty,
 } from "../controllers/recordingsController.js";
 import { createresource } from "../controllers/resourcesController.js";
-import {textFileCreator} from '../services/textFileCreator.js'
+import { textFileCreator } from "../services/textFileCreator.js";
 import {
   isSubjectChapterAvailable,
   isSubjectAvailable,
@@ -33,6 +34,7 @@ import {
 const router = Router();
 
 router.get("/chapters/:id", auth(), getchapter);
+router.get("/recordings/:id/get/:property", auth(), getRecordingProperty);
 router.post("/recordings/:id/requestprocessing", auth(), requestProcessing);
 router.post("/recordings/:id/checkstatus", auth(), checkIfCompleted);
 router.get("/recordings/:id", getrecording);
@@ -52,7 +54,7 @@ router.post(
   "/subjects/:subject/chapters",
   auth(),
   checkRole([USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER]),
-  // isSubjectAvailable,
+  isSubjectAvailable,
   createchapter
 );
 router.get("/subjects/:subject/chapters", auth(), getchapters);
@@ -219,18 +221,20 @@ router.delete(
   }
 );
 
-router.post('/subjects/:subject/chapters/:chapter/transcript/upload',
-auth(),
-checkRole([USER_ROLES.SUPER_ADMIN,USER_ROLES.TEACHER]),
-isSubjectChapterAvailable,
-async(req,res,next)=>{
-    const responseUrl = await createAndUploadTextFile(req.body.response_json)
-    return res.send({file_url:responseUrl})
-
-
-}
-
-)
+router.post(
+  "/subjects/:subject/chapters/:chapter/transcript/upload",
+  auth(),
+  checkRole([USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER]),
+  isSubjectChapterAvailable,
+  async (req, res, next) => {
+    try {
+      const responseUrl = await createAndUploadTextFile(req.body.response_json);
+      return res.send({ file_url: responseUrl });
+    } catch (error) {
+      return res.send({ error: error.message });
+    }
+  }
+);
 router.use("/classrooms", auth(), classroomsController);
 router.get("/subjects/", auth(), getMysubjects);
 export default router;

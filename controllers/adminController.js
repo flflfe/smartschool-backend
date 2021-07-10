@@ -3,7 +3,11 @@ import classrooms from "../models/classrooms.js";
 import { USER_ROLES } from "../Utils/constants.js";
 
 export async function postStudentSignUp(req, res) {
-  const user = new Users({ ...req.body,Email: `${Email[0].toLowerCase()}${Email.slice(1)}`, role: "role.student" });
+  const user = new Users({
+    ...req.body,
+    Email: `${Email[0].toLowerCase()}${Email.slice(1)}`,
+    role: "role.student",
+  });
   try {
     const classroom = await classrooms.findById(req.body.classroom);
     if (!classroom) {
@@ -27,7 +31,11 @@ export async function postStudentSignUp(req, res) {
   }
 }
 export async function postTeacherSignUp(req, res) {
-  const user = new Users({ ...req.body, Email: `${Email[0].toLowerCase()}${Email.slice(1)}`,role: "role.teacher" });
+  const user = new Users({
+    ...req.body,
+    Email: `${Email[0].toLowerCase()}${Email.slice(1)}`,
+    role: "role.teacher",
+  });
   try {
     await user.save();
     return res.send({

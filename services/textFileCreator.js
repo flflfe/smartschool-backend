@@ -15,7 +15,8 @@ export const createAndUploadTextFile = async(response) => {
         const containerName = 'transcript'
         const containerClient = blobServiceClient.getContainerClient(containerName);
         const blobName = createTextFileName();
-        const stringData = (JSON.stringify(response));
+        const stringData = (JSON.stringify(response)).replace(/["]+/g, '');
+        console.log(stringData)
         const stream = getStream(Buffer.from(stringData, 'utf8'))
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
         await blockBlobClient.uploadStream(

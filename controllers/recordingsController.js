@@ -14,6 +14,13 @@ import {
   getTranscript,
   submitVideo,
 } from "../services/languageprocessor.js";
+import { tokenGenerator } from "../Utils/authtokengenerator.js";
+import { saveManyMessages } from "./messagesController.js";
+import { saveManyquestions } from "./questionsController.js";
+import { saveManyfollowups } from "./followupsController.js";
+import { saveManyTopics } from "./topicsController.js";
+import { saveManyactions } from "./actionsController.js";
+import { saveManysummarys } from "./summaryController.js";
 const router = Router();
 
 export async function getrecordings(req, res) {
@@ -31,6 +38,23 @@ export async function getrecording(req, res) {
       .findOne({ _id: req.params.id })
       .populate({ path: "author", select: ["Name"] })
       .populate({ path: "chapter", select: ["name"] });
+    res.send({ recording });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ Error: error });
+  }
+}
+export async function getRecordingProperty(req, res) {
+  const property = req.params.property;
+  try {
+    const recording = await recordings
+      .findOne({ _id: req.params.id }, { [property]: 1 })
+      .populate({ path: property });
+    if (property === "transcript") {
+      recording.transcript.sort((a, b) => {
+        a.startTime - b.startTime;
+      });
+    }
     res.send({ recording });
   } catch (error) {
     console.log(error);
@@ -92,11 +116,9 @@ export const requestProcessing = async (req, res) => {
       return res.status(409).send({ Error: "Already Requested" });
     }
     const processingStatus = await submitVideo({ url: recording.recordingUrl });
-    console.log(processingStatus);
     if (processingStatus?.error) {
       throw new Error(processingStatus.data.message);
     }
-    console.log(processingStatus);
     recording.isRequested = true;
     recording.conversationId = processingStatus.conversationId;
     recording.jobId = processingStatus.jobId;
@@ -107,7 +129,18 @@ export const requestProcessing = async (req, res) => {
     return res.status(500).send({ Error: error.message });
   }
 };
-const convertTimeStamp = (data, startTime) => {};
+
+const convertTimeStamp = (data, startTime) => {
+  const startTimeDate = new Date(startTime);
+  data.forEach((message) => {
+    delete Object.assign(message, { ["m_id"]: message["id"] })["id"]; //rename id to m_id
+    const messageStartDate = new Date(message.startTime);
+    const messageEndDate = new Date(message.endTime);
+    message.startTime = messageStartDate - startTimeDate;
+    message.endTime = messageEndDate - startTimeDate;
+  });
+  return data;
+};
 
 export const checkIfCompleted = async (req, res) => {
   const id = req.params.id || req.recordingId;
@@ -116,10 +149,12 @@ export const checkIfCompleted = async (req, res) => {
     if (recording.isComplete) {
       return res.status(409).send({ Error: "Already Completed" });
     }
-    const status = await checkJobStatus(recording.jobId);
+    const token = await tokenGenerator();
+    const status = await checkJobStatus(recording.jobId, token);
     if (status.status === "completed") {
       const conversationDetails = await getConversationDetails(
-        recording.conversationId
+        recording.conversationId,
+        token
       );
       const { startTime, endTime } = conversationDetails;
       recording.startTime = startTime;
@@ -133,19 +168,35 @@ export const checkIfCompleted = async (req, res) => {
         { value: topics },
         { value: actions },
       ] = await Promise.allSettled([
-        getTranscript(recording.conversationId),
-        getQuestions(recording.conversationId),
-        getFollowups(recording.conversationId),
-        getSummary(recording.conversationId),
-        getTopics(recording.conversationId),
-        getActions(recording.conversationId),
+        getTranscript(recording.conversationId, token),
+        getQuestions(recording.conversationId, token),
+        getFollowups(recording.conversationId, token),
+        getSummary(recording.conversationId, token),
+        getTopics(recording.conversationId, token),
+        getActions(recording.conversationId, token),
       ]);
-      recording.transcript = transcript.messages;
-      recording.questions = questions.questions;
-      recording.followups = followups.followUps;
-      recording.summary = summary.summary;
-      recording.topics = topics.topics;
-      recording.actions = actions.actionItems;
+
+      const [
+        { value: transcriptList },
+        { value: questionsList },
+        { value: followupsList },
+        { value: summaryList },
+        { value: topicsList },
+        { value: actionsList },
+      ] = await Promise.allSettled([
+        saveManyMessages(convertTimeStamp(transcript.messages, startTime)),
+        saveManyquestions(questions.questions),
+        saveManyfollowups(followups.followUps),
+        saveManysummarys(summary.summary),
+        saveManyTopics(topics.topics),
+        saveManyactions(actions.actionItems),
+      ]);
+      recording.transcript = transcriptList;
+      recording.questions = questionsList;
+      recording.followups = followupsList;
+      recording.summary = summaryList;
+      recording.topics = topicsList;
+      recording.actions = actionsList;
       recording.isComplete = true;
       await recording.save();
       res.send({ status: "Completed" });
@@ -157,6 +208,7 @@ export const checkIfCompleted = async (req, res) => {
     return res.status(500).send({ Error: error.message });
   }
 };
+
 export const webhookHandler = async (req, res) => {
   try {
     const { jobId } = req.body;
