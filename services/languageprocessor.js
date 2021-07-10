@@ -2,11 +2,17 @@ import Axios from "axios";
 import { tokenGenerator } from "../Utils/authtokengenerator.js";
 import { API } from "../Utils/constants.js";
 
-export const submitVideo = async (videoUrl) => {
+export const submitVideo = async (options) => {
   const data = {
-    url: videoUrl,
+    url: data.url,
     confidenceThreshold: 0.6,
     timezoneOffset: 0,
+    enableSummary: true,
+    detectEntities: true,
+    detectPhrases: true,
+    enableSpeakerDiarization: true,
+    diarizationSpeakerCount: 3,
+    ...options,
   };
   const token = await tokenGenerator();
   const headers = {
