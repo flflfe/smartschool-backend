@@ -10,7 +10,7 @@ const qnaMakerClient = new qnamaker.QnAMakerClient(creds, QnA_endpoint);
 const knowledgeBasekClient = new qnamaker.Knowledgebase(qnaMakerClient);
 
 
-export const createKnowledgeBase = async(qbname = 'QnA Tester', urls = ['https://codekavya.blob.core.windows.net/pdfs/cpp.txt']) => {
+export const createKnowledgeBase = async(qbname, urls = ['https://github.com/Azure-Samples/cognitive-services-sample-data-files/raw/master/qna-maker/data-source-formats/semi-structured.docx']) => {
     console.log(urls)
     const create_kb_payload = {
         name: qbname,
@@ -72,9 +72,9 @@ export async function publishKnowledgeBase(kb_id) {
 
 
 export const generateKBAnswer = async(kb_id, query) => {
-    const EndpointKeys = await getEndpointKeys(qnaMakerClient)
-    if (!EndpointKeys) throw new Error('No Key Available')
-    const queryRuntimeCredentials = new msRest.ApiKeyCredentials({ inHeader: { 'Authorization': 'EndpointKey ' + EndpointKeys } });
+    const EndpointKey = await getEndpointKeys(qnaMakerClient)
+    if (!EndpointKey) throw new Error('No Key Available')
+    const queryRuntimeCredentials = new msRest.ApiKeyCredentials({ inHeader: { 'Authorization': 'EndpointKey ' + EndpointKey } });
     const runtimeClient = new qnamaker_runtime.QnAMakerRuntimeClient(queryRuntimeCredentials, QnA_runtime_endpoint);
 
     console.log(`Querying knowledge base...`)

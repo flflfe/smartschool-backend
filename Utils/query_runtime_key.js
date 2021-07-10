@@ -4,7 +4,6 @@ export const getEndpointKeys = async(qnaMakerClient) => {
 
         const runtimeKeysClient = await qnaMakerClient.endpointKeys;
         const results = await runtimeKeysClient.getKeys()
-        console.log(runtimeKeysClient, results)
 
         if (!results._response.status.toString().startsWith("2")) {
             console.log(`GetEndpointKeys request failed - HTTP status ${results._response.status}`)
