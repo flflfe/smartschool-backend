@@ -41,6 +41,7 @@ export const createKnowledgeBase = async(qbname, urls = ['https://github.com/Azu
             console.log(`Create operation state failed - HTTP status ${operationResult._response.status}`)
             return
         }
+        console.log(operationResult)
 
         // parse resourceLocation for KB ID
         const kbID = operationResult.resourceLocation.replace("/knowledgebases/", "");
@@ -56,18 +57,25 @@ export const createKnowledgeBase = async(qbname, urls = ['https://github.com/Azu
 
 export async function publishKnowledgeBase(kb_id) {
 
-    console.log(`Publishing knowledge base...`)
+    console.log(`Publishing knowledge base...` + kb_id)
+    try {
+        const results = await knowledgeBasekClient.publish(kb_id)
 
-    const results = await qnaMakerClient.publish(kb_id)
+        if (!results._response.status.toString().startsWith("2")) {
+            console.log(`Publish request failed - HTTP status ${results._response.status}`)
+            return false
+        }
 
-    if (!results._response.status.toString().startsWith("2")) {
-        console.log(`Publish request failed - HTTP status ${results._response.status}`)
+        console.log(`Publish request succeeded - HTTP status ${results._response.status}`)
+
+        return true
+    } catch (error) {
+        console.log(error)
         return false
+
     }
 
-    console.log(`Publish request succeeded - HTTP status ${results._response.status}`)
 
-    return true
 }
 
 
