@@ -1,6 +1,7 @@
 import { Router, urlencoded } from "express";
 import auth from "../auth/auth.js";
 import checkRole from "../auth/checkRole.js";
+import { USER_ROLES } from "../Utils/constants.js";
 import {
   deleteUser,
   updateUser,
@@ -17,13 +18,23 @@ router.use(
     extended: false,
   })
 );
-router.post("/signup", auth(), checkRole(["teacher", "admin"]), postUserSignUp);
+router.post(
+  "/signup",
+  auth(),
+  checkRole([USER_ROLES.TEACHER, USER_ROLES.SUPER_ADMIN]),
+  postUserSignUp
+);
 router.post("/signin", postUserSignIn);
 router.get("/user/me", auth(), async (req, res) => {
   res.send(req.user);
 });
 router.post("/user/logout", auth(), postLogoutUsers);
 router.post("/user/logout/all", auth(), postLogoutAllSession);
-router.delete("/users/:id", auth(), checkRole(["admin"]), deleteUser);
+router.delete(
+  "/users/:id",
+  auth(),
+  checkRole([USER_ROLES.SUPER_ADMIN]),
+  deleteUser
+);
 router.patch("/user/me", auth(), updateUser);
 export default router;
