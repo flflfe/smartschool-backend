@@ -11,7 +11,7 @@ import mainRoutes from "./routes/mainroutes.js";
 import adminRoutes from "./routes/adminroutes.js";
 import storageRoutes from "./routes/storageroute.js";
 import knowledgeBaseRoute from "./routes/knowledgeBaseRoute.js";
-import VocabilaryRoute from "./routes/vocabularyRoute.js"
+import VocabilaryRoute from "./routes/VocabilaryRoute.js"
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

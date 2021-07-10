@@ -7,7 +7,7 @@ export const submitVideo = async (options) => {
     url: options.url,
     confidenceThreshold: 0.6,
     timezoneOffset: 0,
-    enableSummary: true,
+    // enableSummary: true,
     detectEntities: true,
     detectPhrases: true,
     enableSpeakerDiarization: true,
@@ -28,7 +28,7 @@ export const submitVideo = async (options) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -46,7 +46,7 @@ export const getTranscript = async (conversationId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -64,7 +64,7 @@ export const getTopics = async (conversationId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -82,7 +82,7 @@ export const getQuestions = async (conversationId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -100,7 +100,7 @@ export const getFollowups = async (conversationId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -118,7 +118,7 @@ export const getEntities = async (conversationId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -136,7 +136,7 @@ export const getSummary = async (conversationId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -154,7 +154,7 @@ export const getActions = async (conversationId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -172,7 +172,7 @@ export const checkJobStatus = async (jobId) => {
     });
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };
 
@@ -188,8 +188,9 @@ export const getConversationDetails = async (conversationId) => {
       url: API.GET_CONVERSATION_DETAILS`${conversationId}`,
       headers: headers,
     });
+    console.log(res.status);
     return res.data;
   } catch (err) {
-    return err;
+    return { data: err.response.data, error: true };
   }
 };

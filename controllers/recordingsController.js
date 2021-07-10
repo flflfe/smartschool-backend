@@ -92,6 +92,11 @@ export const requestProcessing = async (req, res) => {
       return res.status(409).send({ Error: "Already Requested" });
     }
     const processingStatus = await submitVideo({ url: recording.recordingUrl });
+    console.log(processingStatus);
+    if (processingStatus?.error) {
+      throw new Error(processingStatus.data.message);
+    }
+    console.log(processingStatus);
     recording.isRequested = true;
     recording.conversationId = processingStatus.conversationId;
     recording.jobId = processingStatus.jobId;
@@ -99,7 +104,7 @@ export const requestProcessing = async (req, res) => {
     return res.send({ processingStatus, recording });
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ Error: error });
+    return res.status(500).send({ Error: error.message });
   }
 };
 const convertTimeStamp = (data, startTime) => {};
@@ -145,11 +150,11 @@ export const checkIfCompleted = async (req, res) => {
       await recording.save();
       res.send({ status: "Completed" });
     } else {
-      return res.send({ status: status.status });
+      return res.send({ status: status.status || "Okay" });
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).send({ Error: error });
+    return res.status(500).send({ Error: error.message });
   }
 };
 export const webhookHandler = async (req, res) => {
