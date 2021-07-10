@@ -90,7 +90,7 @@ export const requestProcessing = async (req, res) => {
     if (recording.isRequested) {
       return res.status(409).send({ Error: "Already Requested" });
     }
-    const processingStatus = await submitVideo(recording.recordingUrl);
+    const processingStatus = await submitVideo({ url: recording.recordingUrl });
     recording.isRequested = true;
     recording.conversationId = processingStatus.conversationId;
     recording.jobId = processingStatus.jobId;
@@ -103,8 +103,9 @@ export const requestProcessing = async (req, res) => {
 };
 
 export const checkIfCompleted = async (req, res) => {
+  const id = req.params.id || req.recordingId;
   try {
-    const recording = await recordings.findOne({ _id: req.params.id });
+    const recording = await recordings.findOne({ _id: id });
     if (recording.isComplete) {
       return res.status(409).send({ Error: "Already Completed" });
     }
@@ -126,9 +127,25 @@ export const checkIfCompleted = async (req, res) => {
           recording.topics = topics;
           recording.actions = actions;
           recording.save();
-          res.send(recording);
+          res.send({ status: "Completed" });
         }
       );
+    } else {
+      return res.send({ status: status });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ Error: error });
+  }
+};
+export const webhookHandler = async (req, res) => {
+  try {
+    const { jobId } = req.body;
+    const recording = await recordings.findOne({ jobId });
+    if (!recording) {
+      return res.status(404).send({ Error: "No recording with matching Id" });
+    } else {
+      return await checkIfCompleted(req, res);
     }
   } catch (error) {
     console.log(error);

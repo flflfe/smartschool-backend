@@ -10,6 +10,7 @@ import {
   postLogoutAllSession,
   postStudentSignUp,
   postTeacherSignUp,
+  getTeacherslist,
 } from "../controllers/adminController.js";
 import adminDashboard from "../Utils/admin-dashboard.js";
 const router = Router();
@@ -35,6 +36,12 @@ router.post("/signin", postUserSignIn);
 router.get("/user/me", auth(), async (req, res) => {
   res.send(req.user);
 });
+router.get(
+  "/teachers",
+  auth(),
+  checkRole([USER_ROLES.TEACHER]),
+  getTeacherslist
+);
 router.post("/user/logout", auth(), postLogoutUsers);
 router.post("/user/logout/all", auth(), postLogoutAllSession);
 router.delete(

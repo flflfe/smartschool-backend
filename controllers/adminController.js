@@ -1,5 +1,6 @@
 import Users from "../models/users.js";
 import classrooms from "../models/classrooms.js";
+import { USER_ROLES } from "../Utils/constants.js";
 
 export async function postStudentSignUp(req, res) {
   const user = new Users({ ...req.body, role: "role.student" });
@@ -119,6 +120,20 @@ export async function postLogoutUsers(req, res, next) {
     await req.user.save();
     return res.redirect(200, "/login");
   } catch (error) {
+    return res.status(200).send({ Error: error.message });
+  }
+}
+
+export async function getTeacherslist(req, res, next) {
+  try {
+    const teachers = await Users.find(
+      { role: USER_ROLES.TEACHER },
+      { Name: 1 }
+    );
+    console.log(teachers);
+    res.json({ teacher: teachers });
+  } catch (error) {
+    console.log(error);
     return res.status(200).send({ Error: error.message });
   }
 }

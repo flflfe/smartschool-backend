@@ -2,7 +2,7 @@ import chapterModel from "../models/chapters.js";
 import subjectModel from "../models/subjects.js";
 
 
-export async function getVocabilaryList(req, res) {
+export  async function getvocabularyList(req, res) {
 
     try {
         const chapterDoc = await chapterModel.findById(req.chapter)
@@ -34,7 +34,7 @@ export async function addData(req, res) {
 
 }
 
-export async function deleteVocabilaryData(req, res) {
+export async function deleteVocabularyData(req, res) {
     try {
         const id = req.body.data_id
         const document = await chapterModel.findById(req.chapter)
@@ -53,7 +53,7 @@ export async function deleteVocabilaryData(req, res) {
     }
 
 }
-export async function updateVocabilaryData(req, res) {
+export async function updateVocabularyData(req, res) {
     try {
         const data_id = req.body.data_id
         const NewData = req.body.data
