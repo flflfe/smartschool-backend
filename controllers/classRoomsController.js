@@ -16,7 +16,12 @@ export async function getclassrooms(req, res) {
 }
 export async function getclassroom(req, res) {
   try {
-    const classroom = await classrooms.findOne({ _id: req.params.id });
+    const classroom = await classrooms
+      .findOne({ _id: req.params.id })
+      .populate({
+        path: "subjects",
+        populate: { path: "teachers", select: ["Name"] },
+      });
     res.send({ classroom });
   } catch (error) {
     console.log(error);
@@ -54,10 +59,10 @@ export async function updateclassroom(req, res) {
     return res.status(500).send({ Error: error });
   }
 }
-router.get("/all", checkRole([USER_ROLES.TEACHER]), getclassrooms);
-router.get("/:id", checkRole([USER_ROLES.TEACHER]), getclassroom);
-router.post("/", checkRole([USER_ROLES.TEACHER]), createclassroom);
-router.patch("/:id", checkRole([USER_ROLES.TEACHER]), updateclassroom);
-router.delete("/:id", checkRole([USER_ROLES.TEACHER]), deleteclassroom);
+router.get("/", checkRole([USER_ROLES.SUPER_ADMIN]), getclassrooms);
+router.get("/:id", checkRole([USER_ROLES.SUPER_ADMIN]), getclassroom);
+router.post("/", checkRole([USER_ROLES.SUPER_ADMIN]), createclassroom);
+router.patch("/:id", checkRole([USER_ROLES.SUPER_ADMIN]), updateclassroom);
+router.delete("/:id", checkRole([USER_ROLES.SUPER_ADMIN]), deleteclassroom);
 
 export default router;

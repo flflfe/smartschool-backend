@@ -49,15 +49,26 @@ export async function getsubject(req, res) {
   }
 }
 export async function createsubject(req, res) {
-  const subject = new subjects(req.body);
+  const classroom = await classrooms.findOne({ _id: req.params.classroom });
+  if (!classroom) {
+    return res.status(404).send({ Error: "Classroom not found" });
+  }
+  const subject = new subjects({
+    name: req.body.name,
+    classroom: classroom,
+    teachers: req.body.teachers,
+  });
   try {
     await subject.save();
+    classroom.subjects.push(subject);
+    await classroom.save();
     res.send({ subject });
   } catch (error) {
     console.log(error);
     return res.status(500).send({ Error: error });
   }
 }
+
 export async function deletesubject(req, res) {
   try {
     const subject = await subjects.findByIdAndDelete(req.params.id);
@@ -81,7 +92,7 @@ export async function updatesubject(req, res) {
 }
 router.get("/", getMysubjects);
 router.get("/:id", getsubject);
-router.post("/", checkRole(["admin"]), createsubject);
+// router.post("/", checkRole(["admin"]), createsubject);
 router.patch("/:id", checkRole(["admin"]), updatesubject);
 router.delete("/:id", checkRole(["admin"]), deletesubject);
 

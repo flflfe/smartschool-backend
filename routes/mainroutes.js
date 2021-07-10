@@ -3,12 +3,15 @@ const { Router } = express;
 
 import auth from "../auth/auth.js";
 import checkRole from "../auth/checkRole.js";
-import chaptersController from "../controllers/chapterController.js";
-import subjectsController from "../controllers/subjectsController.js";
-import {
+import chaptersController, {
   getchapters,
   createchapter,
 } from "../controllers/chapterController.js";
+import subjectsController, {
+  createsubject,
+  getMysubjects,
+} from "../controllers/subjectsController.js";
+import classroomsController from "../controllers/classroomsController.js";
 import { USER_ROLES } from "../Utils/constants.js";
 
 const router = Router();
@@ -21,5 +24,12 @@ router.post(
   createchapter
 );
 router.get("/subjects/:subject/chapters", auth(), getchapters);
-router.use("/subjects/", auth(), subjectsController);
+router.post(
+  "/classrooms/:classroom/subjects",
+  auth(),
+  checkRole(["admin"]),
+  createsubject
+);
+router.use("/classrooms", auth(), classroomsController);
+router.get("/subjects/", auth(), getMysubjects);
 export default router;
