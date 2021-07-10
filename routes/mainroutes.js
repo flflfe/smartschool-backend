@@ -13,10 +13,17 @@ import subjectsController, {
 } from "../controllers/subjectsController.js";
 import classroomsController from "../controllers/classroomsController.js";
 import { USER_ROLES } from "../Utils/constants.js";
+import { createrecording } from "../controllers/recordingsController.js";
 
 const router = Router();
 
-router.use("/chapters/", auth(), chaptersController);
+// router.use("/chapters/", auth(), chaptersController);
+router.post(
+  "/chapters/:chapter/recordings",
+  auth(),
+  checkRole([USER_ROLES.TEACHER]),
+  createrecording
+);
 router.post(
   "/subjects/:subject/chapters",
   auth(),

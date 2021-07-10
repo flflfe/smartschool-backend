@@ -2,6 +2,7 @@ import express from "express";
 const { Router } = express;
 import recordings from "../models/recordings.js";
 import checkRole from "../auth/checkRole.js";
+import chapters from "./../models/chapters.js";
 const router = Router();
 
 export async function getrecordings(req, res) {
@@ -23,9 +24,21 @@ export async function getrecording(req, res) {
   }
 }
 export async function createrecording(req, res) {
-  const recording = new recordings(req.body);
+  const chapter = await chapters.findOne({ _id: req.params.chapter });
+  if (!chapter) {
+    return res.status(404).send({ Error: "No such chapter" });
+  }
+  const recording = new recordings({
+    title: req.body.title,
+    recordingUrl: req.body.recordingUrl,
+    chapter: chapter._id,
+    isComplete: false,
+    author: req.user._id,
+  });
   try {
     await recording.save();
+    chapter.recordings.push(recording);
+    await chapter.save();
     res.send({ recording });
   } catch (error) {
     console.log(error);
@@ -55,7 +68,7 @@ export async function updaterecording(req, res) {
 }
 router.get("/all", checkRole(["admin"]), getrecordings);
 router.get("/:id", getrecording);
-router.post("/", checkRole(["admin"]), createrecording);
+// router.post("/", checkRole(["admin"]), createrecording);
 router.patch("/:id", checkRole(["admin"]), updaterecording);
 router.delete("/:id", checkRole(["admin"]), deleterecording);
 
