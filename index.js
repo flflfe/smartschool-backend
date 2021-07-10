@@ -11,6 +11,7 @@ import mainRoutes from "./routes/mainroutes.js";
 import adminRoutes from "./routes/adminroutes.js";
 import storageRoutes from "./routes/storageroute.js";
 import knowledgeBaseRoute from "./routes/knowledgeBaseRoute.js";
+import VocabilaryRoute from "./routes/VocabilaryRoute.js"
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -21,20 +22,22 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(json());
 app.use(cors());
 app.use((req, res, next) => {
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+    );
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
 });
 app.use(mainRoutes);
 app.use(adminRoutes);
 app.use(storageRoutes);
 app.use(knowledgeBaseRoute);
+app.use(VocabilaryRoute);
+
 
 app.get("/home", (req, res, next) => {
-  res.render("index");
+    res.render("index");
 });
 app.get("/", (req, res) => res.send(`Hello World! ${req.hostname}`));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

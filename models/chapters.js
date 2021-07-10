@@ -3,31 +3,33 @@ const { Schema: _Schema, model } = mongoose;
 const Schema = _Schema;
 
 const chaptersSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  subject: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "subjects",
-  },
-  recordings: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "recordings",
+    name: {
+        type: String,
+        required: true,
     },
-  ],
-  resourceFiles: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "resources",
+    subject: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "subjects",
     },
-  ],
-  chatBotId: {
-    type: String,
-    default: null,
-  },
-  chatbotSubKey: { type: String, default: null },
+    recordings: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "recordings",
+    }, ],
+    resourceFiles: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "resources",
+    }, ],
+    chatBotId: {
+        type: String,
+        default: null,
+    },
+    VocabilaryList: [{
+        data: {
+            type: String
+
+        }
+    }],
+    chatbotSubKey: { type: String, default: null },
 });
 
 const chapters = model("chapters", chaptersSchema);
