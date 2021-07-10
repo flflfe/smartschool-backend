@@ -127,11 +127,11 @@ export const checkIfCompleted = async (req, res) => {
           recording.topics = topics;
           recording.actions = actions;
           recording.save();
-          return res.send({ status: "Completed" });
+          res.send({ status: "Completed" });
         }
       );
     } else {
-      return res.send({ status: status.status });
+      return res.send({ status: status });
     }
   } catch (error) {
     console.log(error);

@@ -4,7 +4,7 @@ import { API } from "../Utils/constants.js";
 
 export const submitVideo = async (options) => {
   const data = {
-    url: data.url,
+    url: options.url,
     confidenceThreshold: 0.6,
     timezoneOffset: 0,
     enableSummary: true,
@@ -169,7 +169,7 @@ export const checkJobStatus = async (jobId) => {
   try {
     const res = await Axios({
       method: "get",
-      url: `https://api.symbl.ai/v1/job/${jobId}`,
+      url: `https://api-labs.symbl.ai/v1/job/${jobId}`,
       headers: headers,
     });
     return res.data;
