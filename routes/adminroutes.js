@@ -10,7 +10,7 @@ import {
   postLogoutAllSession,
   postUserSignUp,
 } from "../controllers/adminController.js";
-
+import adminDashboard from "../Utils/admin-dashboard.js";
 const router = Router();
 
 router.use(
@@ -37,4 +37,5 @@ router.delete(
   deleteUser
 );
 router.patch("/user/me", auth(), updateUser);
+router.use("/admin", adminDashboard);
 export default router;
