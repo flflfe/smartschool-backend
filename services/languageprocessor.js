@@ -26,8 +26,6 @@ export const submitVideo = async (options) => {
       data: data,
       headers: headers,
     });
-    console.log(res.data);
-    console.log({ res: res.data });
     return res.data;
   } catch (err) {
     return err;
@@ -170,6 +168,24 @@ export const checkJobStatus = async (jobId) => {
     const res = await Axios({
       method: "get",
       url: `https://api-labs.symbl.ai/v1/job/${jobId}`,
+      headers: headers,
+    });
+    return res.data;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getConversationDetails = async (conversationId) => {
+  const token = await tokenGenerator();
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+  try {
+    const res = await Axios({
+      method: "get",
+      url: API.GET_CONVERSATION_DETAILS`${conversationId}`,
       headers: headers,
     });
     return res.data;

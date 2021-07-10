@@ -20,6 +20,8 @@ const recordingsSchema = new Schema({
   summary: Object,
   topics: Object,
   actions: Object,
+  startTime: String,
+  endTime: String,
 });
 
 const recordings = model("recordings", recordingsSchema);

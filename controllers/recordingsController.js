@@ -6,6 +6,7 @@ import chapters from "./../models/chapters.js";
 import {
   checkJobStatus,
   getActions,
+  getConversationDetails,
   getFollowups,
   getQuestions,
   getSummary,
@@ -101,6 +102,7 @@ export const requestProcessing = async (req, res) => {
     return res.status(500).send({ Error: error });
   }
 };
+const convertTimeStamp = (data, startTime) => {};
 
 export const checkIfCompleted = async (req, res) => {
   const id = req.params.id || req.recordingId;
@@ -111,27 +113,39 @@ export const checkIfCompleted = async (req, res) => {
     }
     const status = await checkJobStatus(recording.jobId);
     if (status.status === "completed") {
-      Promise.all([
+      const conversationDetails = await getConversationDetails(
+        recording.conversationId
+      );
+      const { startTime, endTime } = conversationDetails;
+      recording.startTime = startTime;
+      recording.endTime = endTime;
+      recording.startTime;
+      const [
+        { value: transcript },
+        { value: questions },
+        { value: followups },
+        { value: summary },
+        { value: topics },
+        { value: actions },
+      ] = await Promise.allSettled([
         getTranscript(recording.conversationId),
         getQuestions(recording.conversationId),
         getFollowups(recording.conversationId),
         getSummary(recording.conversationId),
         getTopics(recording.conversationId),
         getActions(recording.conversationId),
-      ]).then(
-        ([transcript, questions, followups, summary, topics, actions]) => {
-          recording.transcript = transcript;
-          recording.questions = questions;
-          recording.followups = followups;
-          recording.summary = summary;
-          recording.topics = topics;
-          recording.actions = actions;
-          recording.save();
-          res.send({ status: "Completed" });
-        }
-      );
+      ]);
+      recording.transcript = transcript.messages;
+      recording.questions = questions.questions;
+      recording.followups = followups.followUps;
+      recording.summary = summary.summary;
+      recording.topics = topics.topics;
+      recording.actions = actions.actionItems;
+      recording.isComplete = true;
+      await recording.save();
+      res.send({ status: "Completed" });
     } else {
-      return res.send({ status: status });
+      return res.send({ status: status.status });
     }
   } catch (error) {
     console.log(error);

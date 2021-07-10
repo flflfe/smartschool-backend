@@ -24,6 +24,9 @@ export const API = {
   SUBMIT_VIDEO:
     "https://api-labs.symbl.ai/v1/process/video/url?detectEntities=true",
   REQUEST_TOKEN: "https://api.symbl.ai/oauth2/token:generate",
+  GET_CONVERSATION_DETAILS: (_, conversationId) => {
+    return `${API.BASE_URL}${conversationId}`;
+  },
   GET_TRANSCRIPT: (_, conversationId) => {
     return `${API.BASE_URL}${conversationId}/messages?sentiment=true`;
   },
@@ -34,7 +37,7 @@ export const API = {
     return `${API.BASE_URL}${conversationId}/questions`;
   },
   GET_ACTIONS: (_, conversationId) => {
-    return `${API.BASE_URL}${conversationId}/action-items`;
+    return `${API.LABS_BASE_URL}${conversationId}/comprehensive/action-items`;
   },
   GET_SUMMARY: (_, conversationId) => {
     return `${API.LABS_BASE_URL}${conversationId}/summary`;
