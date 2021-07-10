@@ -16,10 +16,17 @@ const creds = new msRest.ApiKeyCredentials({
 const qnaMakerClient = new qnamaker.QnAMakerClient(creds, QnA_endpoint);
 const knowledgeBasekClient = new qnamaker.Knowledgebase(qnaMakerClient);
 
-export const createKB = async (qbname, files) => {
+export const createKB = async (qbname) => {
   const create_kb_payload = {
     name: qbname,
-    files: files,
+    files: [
+      {
+        fileName: "oop.pdf",
+        fileUri:
+          "https://github.com/codekavya/static-files-test/raw/main/oop.pdf",
+        isUnstructured: true,
+      },
+    ],
     defaultAnswerUsedForExtraction: "Sorry No answer found.",
     enableHierarchicalExtraction: true,
     language: "English",
@@ -61,7 +68,7 @@ export const createKB = async (qbname, files) => {
 
     return kbID;
   } catch (err) {
-    console.log(err.response.data.error.details);
+    console.log(err);
     return err;
   }
 };

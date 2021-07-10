@@ -17,7 +17,7 @@ export const createAndUploadTextFile = async (stringData, fileName) => {
   try {
     const containerName = "transcript";
     const containerClient = blobServiceClient.getContainerClient(containerName);
-    const blobName = `${fileName}.docx`;
+    const blobName = `${fileName}.txt`;
     const stream = getStream(Buffer.from(stringData, "utf8"));
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     await blockBlobClient.uploadStream(
@@ -26,7 +26,7 @@ export const createAndUploadTextFile = async (stringData, fileName) => {
       uploadOptions.maxBuffers,
       {
         blobHTTPHeaders: {
-          blobContentType: "application/msword",
+          blobContentType: "application/text",
         },
       }
     );

@@ -3,21 +3,26 @@ const { Schema: _Schema, model } = mongoose;
 const Schema = _Schema;
 
 const questionsSchema = new Schema({
-  q_id: { type: Number, unique: true },
+  q_id: { type: Number, unique: false },
   text: String,
-  type: { type: String },
+  type: { type: Number },
   score: Number,
-  messageIds: [Number],
+  messageIds: [{ type: Number ,ref:"messages"}],
   from: {
     id: String,
     name: String,
   },
-});
-questionsSchema.virtual("question", {
-  ref: "messages",
-  localField: "messageIds",
-  foreignField: "m_id",
-});
+}, { toJSON: { virtual: true },toObject:{virtual:true} });
+
+
+questionsSchema.virtual('question', {
+  ref: 'messages',
+  localField: 'messageIds',
+  foreignField: 'm_id',
+
+})
+
+
 
 const questions = model("questions", questionsSchema);
 
