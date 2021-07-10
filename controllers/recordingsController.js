@@ -3,6 +3,16 @@ const { Router } = express;
 import recordings from "../models/recordings.js";
 import checkRole from "../auth/checkRole.js";
 import chapters from "./../models/chapters.js";
+import {
+  checkJobStatus,
+  getActions,
+  getFollowups,
+  getQuestions,
+  getSummary,
+  getTopics,
+  getTranscript,
+  submitVideo,
+} from "../services/languageprocessor.js";
 const router = Router();
 
 export async function getrecordings(req, res) {
@@ -16,7 +26,10 @@ export async function getrecordings(req, res) {
 }
 export async function getrecording(req, res) {
   try {
-    const recording = await recordings.findOne({ _id: req.params.id });
+    const recording = await recordings
+      .findOne({ _id: req.params.id })
+      .populate({ path: "author", select: ["Name"] })
+      .populate({ path: "chapter", select: ["name"] });
     res.send({ recording });
   } catch (error) {
     console.log(error);
@@ -45,6 +58,7 @@ export async function createrecording(req, res) {
     return res.status(500).send({ Error: error });
   }
 }
+
 export async function deleterecording(req, res) {
   try {
     const recording = await recordings.findByIdAndDelete(req.params.id);
@@ -66,6 +80,62 @@ export async function updaterecording(req, res) {
     return res.status(500).send({ Error: error });
   }
 }
+
+export const requestProcessing = async (req, res) => {
+  try {
+    const recording = await recordings.findOne({ _id: req.params.id });
+    if (!recording) {
+      return res.status(400).send({ Error: "Invalid recording Url" });
+    }
+    if (recording.isRequested) {
+      return res.status(409).send({ Error: "Already Requested" });
+    }
+    const processingStatus = await submitVideo(recording.recordingUrl);
+    recording.isRequested = true;
+    recording.conversationId = processingStatus.conversationId;
+    recording.jobId = processingStatus.jobId;
+    await recording.save();
+    return res.send({ processingStatus, recording });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ Error: error });
+  }
+};
+
+export const checkIfCompleted = async (req, res) => {
+  try {
+    const recording = await recordings.findOne({ _id: req.params.id });
+    if (recording.isComplete) {
+      return res.status(409).send({ Error: "Already Completed" });
+    }
+    const status = await checkJobStatus(recording.jobId);
+    if (status.status === "completed") {
+      Promise.all([
+        getTranscript(recording.conversationId),
+        getQuestions(recording.conversationId),
+        getFollowups(recording.conversationId),
+        getSummary(recording.conversationId),
+        getTopics(recording.conversationId),
+        getActions(recording.conversationId),
+      ]).then(
+        ([transcript, questions, followups, summary, topics, actions]) => {
+          recording.transcript = transcript;
+          recording.questions = questions;
+          recording.followups = followups;
+          recording.summary = summary;
+          recording.topics = topics;
+          recording.actions = actions;
+          recording.save();
+          res.send(recording);
+        }
+      );
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ Error: error });
+  }
+};
+
 router.get("/all", checkRole(["admin"]), getrecordings);
 router.get("/:id", getrecording);
 // router.post("/", checkRole(["admin"]), createrecording);
