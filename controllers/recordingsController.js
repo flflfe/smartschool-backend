@@ -21,6 +21,7 @@ import { saveManyfollowups } from "./followupsController.js";
 import { saveManyTopics } from "./topicsController.js";
 import { saveManyactions } from "./actionsController.js";
 import { saveManysummarys } from "./summaryController.js";
+import recordings from "./../models/recordings";
 const router = Router();
 
 export async function getrecordings(req, res) {
@@ -117,6 +118,7 @@ export const requestProcessing = async (req, res) => {
     }
     const chapter = await chapters.findOne({ _id: recording.chapter });
     const customVocabulary = chapter.VocabularyList.map((obj) => obj.data);
+    // console.log({ customVocabulary });
     const processingStatus = await submitVideo({
       url: recording.recordingUrl,
       customVocabulary,
@@ -161,6 +163,7 @@ export const checkIfCompleted = async (req, res) => {
         recording.conversationId,
         token
       );
+      // console.log(conversationDetails);
       const { startTime, endTime } = conversationDetails;
       recording.startTime = startTime;
       recording.endTime = endTime;

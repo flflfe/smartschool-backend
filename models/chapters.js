@@ -27,6 +27,7 @@ const chaptersSchema = new Schema({
     type: String,
     default: null,
   },
+  isPublished: { type: Boolean, default: false },
   VocabularyList: [
     {
       data: {

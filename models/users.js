@@ -91,7 +91,9 @@ userSchema.methods.toJSON = function () {
 };
 
 userSchema.statics.findByProvideInfo = async (Email, password) => {
-  const user = await Users.findOne({ Email:`${Email[0].toLowerCase()}${Email.slice(1)}`});
+  const user = await Users.findOne({
+    Email: `${Email[0].toLowerCase()}${Email.slice(1)}`,
+  });
 
   if (!user) {
     throw new Error("Invalid Email or Password");
