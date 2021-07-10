@@ -12,6 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/cognitiveservices-qnamaker": "^3.2.0",
+    "@azure/cognitiveservices-qnamaker-runtime": "^1.0.1",
+    "@azure/ms-rest-js": "^2.5.2",
     "@azure/storage-blob": "^12.6.0",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",

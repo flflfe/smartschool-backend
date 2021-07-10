@@ -10,6 +10,7 @@ const port = process.env.port || 3000;
 import mainRoutes from "./routes/mainroutes.js";
 import adminRoutes from "./routes/adminroutes.js";
 import storageRoutes from "./routes/storageroute.js";
+import knowledgeBaseRoute from "./routes/knowledgeBaseRoute.js";
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
 app.use(mainRoutes);
 app.use(adminRoutes);
 app.use(storageRoutes);
+app.use(knowledgeBaseRoute);
 
 app.get("/home", (req, res, next) => {
   res.render("index");
