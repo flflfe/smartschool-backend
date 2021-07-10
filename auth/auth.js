@@ -8,7 +8,7 @@ const auth = () => async (req, res, next) => {
   try {
     if (!req.header("Authorization")) throw new Error("No Auth Header");
     const token = req.header("Authorization").replace("Bearer ", "");
-    console.log(token);
+    // console.log(token);
     const payload = verify(token, jwtsigninKey);
     const user = await userModels.findOne({
       _id: payload._id,

@@ -7,18 +7,18 @@ const chaptersSchema = new Schema({
     type: String,
     required: true,
   },
-  classroom: {
+  subject: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "classrooms",
+    ref: "subjects",
   },
   date: {
     default: Date.now(),
     type: Date,
   },
-  videos: [
+  recordings: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "videos",
+      ref: "recordings",
     },
   ],
   resourceFiles: [
@@ -27,16 +27,11 @@ const chaptersSchema = new Schema({
       ref: "resources",
     },
   ],
-  organizer: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
-    },
-  ],
   chatBotId: {
     type: String,
     default: null,
   },
+  chatbotSubKey: { type: String, default: null },
 });
 
 const chapters = model("chapters", chaptersSchema);

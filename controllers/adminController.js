@@ -1,5 +1,6 @@
 import Users from "../models/users.js";
 import classrooms from "../models/classrooms.js";
+
 export async function postUserSignUp(req, res) {
   const user = new Users(req.body);
   try {
@@ -51,6 +52,7 @@ export async function postUserSignIn(req, res) {
       token,
     });
   } catch (error) {
+    console.log(error);
     return res.status(401).send({
       Error: "Error Logging",
       error,

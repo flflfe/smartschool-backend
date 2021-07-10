@@ -21,9 +21,9 @@ export const createKB = async (qbname) => {
     name: qbname,
     files: [
       {
-        fileName: "oop.docx",
+        fileName: "oop.pdf",
         fileUri:
-          "https://github.com/codekavya/static-files-test/raw/main/oop.docx",
+          "https://github.com/codekavya/static-files-test/raw/main/oop.pdf",
         isUnstructured: true,
       },
     ],
