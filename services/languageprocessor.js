@@ -1,6 +1,6 @@
 import Axios from "axios";
-import { tokenGenerator } from "./authtokengenerator.js";
-import { API } from "./constants.js";
+import { tokenGenerator } from "../Utils/authtokengenerator.js";
+import { API } from "../Utils/constants.js";
 
 export const submitVideo = async ({ videoUrl }) => {
   const data = {
