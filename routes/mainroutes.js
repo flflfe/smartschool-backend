@@ -15,7 +15,7 @@ import {
 import classroomsController from "../controllers/classRoomsController.js";
 import { USER_ROLES } from "../Utils/constants.js";
 import resourcesModel from "../models/resources.js";
-import subjectModel from "../models/subjects.js";
+import {createAndUploadTextFile} from "../services/textFileCreator.js";
 import chatperModel from "../models/chapters.js";
 import {
   createrecording,
@@ -24,6 +24,7 @@ import {
   checkIfCompleted,
 } from "../controllers/recordingsController.js";
 import { createresource } from "../controllers/resourcesController.js";
+import {textFileCreator} from '../services/textFileCreator.js'
 import {
   isSubjectChapterAvailable,
   isSubjectAvailable,
@@ -218,6 +219,18 @@ router.delete(
   }
 );
 
+router.post('/subjects/:subject/chapters/:chapter/transcript/upload',
+auth(),
+checkRole([USER_ROLES.SUPER_ADMIN,USER_ROLES.TEACHER]),
+isSubjectChapterAvailable,
+async(req,res,next)=>{
+    const responseUrl = await createAndUploadTextFile(req.body.response_json)
+    return res.send({file_url:responseUrl})
+
+
+}
+
+)
 router.use("/classrooms", auth(), classroomsController);
 router.get("/subjects/", auth(), getMysubjects);
 export default router;

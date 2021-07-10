@@ -53,12 +53,14 @@ export async function createsubject(req, res) {
   if (!classroom) {
     return res.status(404).send({ Error: "Classroom not found" });
   }
-  const subject = new subjects({
-    name: req.body.name,
-    classroom: classroom,
-    teachers: req.body.teachers,
-  });
+  if(!req.body.teacher)  return res.status(404).send({ Error: "Teacher not found" });
+ 
   try {
+    const subject = new subjects({
+      name: req.body.name,
+      classroom: classroom,
+    });
+    await subject.teachers.push(req.body.teachers)
     await subject.save();
     classroom.subjects.push(subject);
     await classroom.save();

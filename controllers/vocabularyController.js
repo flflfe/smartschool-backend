@@ -1,8 +1,7 @@
 import chapterModel from "../models/chapters.js";
-import subjectModel from "../models/subjects.js";
 
 
-export  async function getvocabularyList(req, res) {
+export async function getVocabularyList(req, res) {
 
     try {
         const chapterDoc = await chapterModel.findById(req.chapter)

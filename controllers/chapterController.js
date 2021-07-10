@@ -43,7 +43,6 @@ export async function createchapter(req, res) {
     });
     try {
         await chapter.save();
-
         await subjects.findByIdAndUpdate(req.subject, { chapters: chapter._id })
         res.send({ chapter });
     } catch (error) {

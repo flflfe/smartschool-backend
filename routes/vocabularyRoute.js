@@ -4,22 +4,22 @@ import {
 import { isSubjectAvailable } from "../middlewares/subjectMiddleware.js"
 import auth from "../auth/auth.js";
 import {
-    getvocabularyList,
+    getVocabularyList,
     addData,
     deleteVocabularyData,
     updateVocabularyData
 } from "../controllers/vocabularyController.js";
 const router = Router();
 
-router.get("/subjects/:subject/chapters/:chapter/vocabulary", auth(),
-    isSubjectAvailable, getvocabularyList);
+router.get("/subjects/:subject/chapters/:chapter/get", auth(),
+    isSubjectAvailable, getVocabularyList);
 
-router.post("/subjects/:subject/chapters/:chapter/vocabulary", auth(),
+router.post("/subjects/:subject/chapters/:chapter/add", auth(),
     isSubjectAvailable, addData);
 
-router.delete("/subjects/:subject/chapters/:chapter/vocabulary", auth(),
+router.delete("/subjects/:subject/chapters/:chapter/remove", auth(),
     isSubjectAvailable, deleteVocabularyData);
 
-router.patch("/subjects/:subject/chapters/:chapter/vocabulary", auth(),
+router.patch("/subjects/:subject/chapters/:chapter/update", auth(),
     isSubjectAvailable, updateVocabularyData);
 export default router;

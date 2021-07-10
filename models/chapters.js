@@ -23,7 +23,7 @@ const chaptersSchema = new Schema({
         type: String,
         default: null,
     },
-    VocabilaryList: [{
+    VocabularyList: [{
         data: {
             type: String
 
