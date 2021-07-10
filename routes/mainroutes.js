@@ -14,6 +14,7 @@ import subjectsController, {
 import classroomsController from "../controllers/classroomsController.js";
 import { USER_ROLES } from "../Utils/constants.js";
 import { createrecording } from "../controllers/recordingsController.js";
+import { createresource } from "../controllers/resourcesController.js";
 
 const router = Router();
 
@@ -23,6 +24,12 @@ router.post(
   auth(),
   checkRole([USER_ROLES.TEACHER]),
   createrecording
+);
+router.post(
+  "/chapters/:chapter/resources",
+  auth(),
+  checkRole([USER_ROLES.TEACHER]),
+  createresource
 );
 router.post(
   "/subjects/:subject/chapters",

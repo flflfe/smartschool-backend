@@ -1,8 +1,8 @@
 import Users from "../models/users.js";
 import classrooms from "../models/classrooms.js";
 
-export async function postUserSignUp(req, res) {
-  const user = new Users(req.body);
+export async function postStudentSignUp(req, res) {
+  const user = new Users({ ...req.body, role: "role.student" });
   try {
     const classroom = await classrooms.findById(req.body.classroom);
     if (!classroom) {
@@ -11,6 +11,7 @@ export async function postUserSignUp(req, res) {
     await user.save();
     return res.send({
       message: "Success!",
+      userId: user._id,
     });
   } catch (E) {
     console.log(E);
@@ -24,7 +25,26 @@ export async function postUserSignUp(req, res) {
     });
   }
 }
-
+export async function postTeacherSignUp(req, res) {
+  const user = new Users({ ...req.body, role: "role.teacher" });
+  try {
+    await user.save();
+    return res.send({
+      message: "Success!",
+      userid: user._id,
+    });
+  } catch (E) {
+    console.log(E);
+    if (E.name === "MongoError" && E.code === 11000)
+      return res.status(409).send({
+        Error: "Duplicate error",
+        E,
+      });
+    return res.status(400).send({
+      Error: E.message,
+    });
+  }
+}
 export async function postLogoutAllSession(req, res, next) {
   try {
     req.user.tokens = [];

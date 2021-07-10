@@ -8,7 +8,8 @@ import {
   postLogoutUsers,
   postUserSignIn,
   postLogoutAllSession,
-  postUserSignUp,
+  postStudentSignUp,
+  postTeacherSignUp,
 } from "../controllers/adminController.js";
 import adminDashboard from "../Utils/admin-dashboard.js";
 const router = Router();
@@ -19,10 +20,16 @@ router.use(
   })
 );
 router.post(
-  "/signup",
+  "/signup/student",
   auth(),
   checkRole([USER_ROLES.TEACHER, USER_ROLES.SUPER_ADMIN]),
-  postUserSignUp
+  postStudentSignUp
+);
+router.post(
+  "/signup/teacher",
+  auth(),
+  checkRole([USER_ROLES.SUPER_ADMIN]),
+  postTeacherSignUp
 );
 router.post("/signin", postUserSignIn);
 router.get("/user/me", auth(), async (req, res) => {

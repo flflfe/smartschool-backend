@@ -7,7 +7,8 @@ const resourcesSchema = new Schema({
     type: String,
     required: true,
   },
-  filUrl: { type: String },
+  fileUrl: { type: String },
+  chapter: { type: Schema.Types.ObjectId, ref: "chapters" },
 });
 
 const resources = model("resources", resourcesSchema);
