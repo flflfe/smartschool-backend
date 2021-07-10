@@ -51,8 +51,6 @@
 
 # About the project
 
-![](images/Running.gif)
-
 A natural language processing-powered cross-platform service for students of the future.
 
 These repository is accompanied by the following repositories.
@@ -109,6 +107,9 @@ npm i
 ```bash
 npm run dev
 ```
+
+![](images/Running.gif)
+
 ## Config
 
 ```js
