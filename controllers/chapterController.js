@@ -17,7 +17,17 @@ export async function getchapters(req, res) {
 }
 export async function getchapter(req, res) {
   try {
-    const chapter = await chapters.findOne({ _id: req.params.id });
+    const chapter = await chapters
+      .findOne({ _id: req.params.id })
+      .populate({
+        path: "recordings",
+        select: ["title", "author"],
+        populate: { path: "author", select: "Name" },
+      })
+      .populate({
+        path: "resourceFiles",
+        populate: { path: "author", select: "Name" },
+      });
     res.send({ chapter });
   } catch (error) {
     console.log(error);
