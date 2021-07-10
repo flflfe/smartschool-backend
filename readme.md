@@ -3,6 +3,29 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="https://github.com/codekavya/smartschool-backend">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">Smart School Backend</h3>
+
+  <p align="center">
+    A natural language processing-powered cross-platform service for students of the future.
+    <br />
+    <a href="#about-the-project"><strong>Explore the readme »</strong></a>
+    <br />
+    <br />
+    <a href="https://codekavya.com">Contact Us</a>
+    ·
+    <a href="https://github.com/codekavya/smartschool-backend/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/codekavya/smartschool-backend/issues">Request Feature</a>
+  </p>
+</p>
+
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary>Table of Contents</summary>
@@ -27,6 +50,8 @@
 </details>
 
 # About the project
+
+![](images/Running.gif)
 
 A natural language processing-powered cross-platform service for students of the future.
 
