@@ -4,21 +4,19 @@ import {
     newPipeline,
 } from "@azure/storage-blob";
 
-import {
-    AZURE_STORAGE_ACCOUNT_ACCESS_KEY,
-    AZURE_STORAGE_ACCOUNT_NAME,
-} from "../config.js";
+import config from "../config.js";
+const { AZURE_STORAGE_ACCOUNT_ACCESS_KEY, AZURE_STORAGE_ACCOUNT_NAME } = config;
 
 
 const sharedKeyCredential = new StorageSharedKeyCredential(
     AZURE_STORAGE_ACCOUNT_NAME,
     AZURE_STORAGE_ACCOUNT_ACCESS_KEY
 );
+
 const pipeline = newPipeline(sharedKeyCredential);
 
 const blobServiceClient = new BlobServiceClient(
-    `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net`,
+    `https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net`,
     pipeline
 );
-
-exports = blobServiceClient
+export default blobServiceClient

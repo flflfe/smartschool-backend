@@ -1,10 +1,13 @@
 import getStream from "into-stream";
+import { getBlobName } from "../Utils/randon_name_generater.js";
+
+import blobServiceClient from '../azure/connection.js'
+const ONE_MEGABYTE = 1024 * 1024;
 
 const uploadOptions = {
     bufferSize: 4 * ONE_MEGABYTE,
     maxBuffers: 20,
 };
-const ONE_MEGABYTE = 1024 * 1024;
 
 
 
@@ -44,32 +47,32 @@ export async function getUploadedFile(req, res, next) {
 }
 
 export async function uploadFileAzure(req, res, next) {
-    async(req, res) => {
-        const blobName = getBlobName(req.file.originalname);
-        const stream = getStream(req.file.buffer);
-        const containerClient = blobServiceClient.getContainerClient(containerName2);
-        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    const blobName = getBlobName(req.file.originalname);
+    const stream = getStream(req.file.buffer);
+    const containerClient = blobServiceClient.getContainerClient('videos');
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-        try {
-            const audio = await blockBlobClient.uploadStream(
-                stream,
-                uploadOptions.bufferSize,
-                uploadOptions.maxBuffers, {
-                    blobHTTPHeaders: {
-                        blobContentType: '',
-                    },
-                }
-            );
-            console.log(audio)
-                // user.img = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName1}/${blobName}`
-                // await user.save();
-            res.render("success", {
-                message: "File uploaded to Azure Blob storage.",
-            });
-        } catch (err) {
-            res.render("error", {
-                message: err.message,
-            });
-        }
+    try {
+        const video = await blockBlobClient.uploadStream(
+            stream,
+            uploadOptions.bufferSize,
+            uploadOptions.maxBuffers, {
+                blobHTTPHeaders: {
+                    blobContentType: 'video/mp4',
+                },
+            }
+        );
+        console.log(video)
+            // user.img = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerName1}/${blobName}`
+            // await user.save();
+        res.send({
+            message: "File uploaded to Azure Blob storage.",
+        });
+    } catch (err) {
+        console.log(err)
+        res.send({
+            message: err.message,
+        });
     }
+
 }
