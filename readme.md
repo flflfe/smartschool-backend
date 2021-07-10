@@ -3,9 +3,12 @@
 
 A natural language processing-powered cross-platform service for students of the future.
 
+# Structure
+![](images/flow.png)
+
 ## Installation
 
-*You need to have `node v14.16.0` or later to run this project.*
+*You need to have `node v14.16.0` or later to run this project since we're using es6+ features*
 
 **Clone the repository to your device.**
 ```bash
