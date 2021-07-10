@@ -3,6 +3,16 @@
 
 A natural language processing-powered cross-platform service for students of the future.
 
+These repository is accompanied by the following repositories.
+
+<a href="https://github.com/codekavya/smartschool-frontend">
+  <!-- Change the `github-readme-stats.anuraghazra1.vercel.app` to `github-readme-stats.vercel.app`  -->
+  <img align="center" src="https://github-readme-stats.anuraghazra1.vercel.app/api/pin/?username=codekavya&repo=smartschool-frontend&theme=material-palenight" />
+</a>    
+<a href="https://github.com/codekavya/smartschool-mobile">
+  <!-- Change the `github-readme-stats.anuraghazra1.vercel.app` to `github-readme-stats.vercel.app`  -->
+  <img align="center" src="https://github-readme-stats.anuraghazra1.vercel.app/api/pin/?username=codekavya&repo=smartschool-mobile&theme=material-palenight" />
+</a>
 # Structure
 ![](images/flow.png)
 
