@@ -7,7 +7,7 @@ const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage, }).single("video");
 
 const router = Router();
-router.get("/audiofile", getUploadedFile);
+router.get("/getall", getUploadedFile);
 
 router.post("/media/upload", uploadStrategy, uploadFileAzure);
 
