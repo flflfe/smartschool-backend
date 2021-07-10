@@ -32,19 +32,18 @@ export const isSubjectAvailable = async (req, res, next) => {
   const subject = req.params.subject;
 
   try {
+
     if (req.user.role === USER_ROLES.SUPER_ADMIN) {
       const isSubjectAvailable = await subjectModel.findOne({ _id: subject });
       if (!isSubjectAvailable)
-        return res
-          .status(404)
-          .send({ message: "No such subject  is available" });
+        throw new Error("No such subject  is available");
     } else if (req.user.role === USER_ROLES.TEACHER) {
       const isSubjectAvailable = await subjectModel.findOne({
         _id: subject,
         teachers: req.user._id,
       });
       if (!isSubjectAvailable)
-        throw new Error("Invalid subject")
+        throw new Error("operation error not allowed")
     }
 
     else {

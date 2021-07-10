@@ -52,7 +52,7 @@ router.post(
   "/subjects/:subject/chapters",
   auth(),
   checkRole([USER_ROLES.SUPER_ADMIN, USER_ROLES.TEACHER]),
-  // isSubjectAvailable,
+  isSubjectAvailable,
   createchapter
 );
 router.get("/subjects/:subject/chapters", auth(), getchapters);
@@ -224,8 +224,14 @@ auth(),
 checkRole([USER_ROLES.SUPER_ADMIN,USER_ROLES.TEACHER]),
 isSubjectChapterAvailable,
 async(req,res,next)=>{
-    const responseUrl = await createAndUploadTextFile(req.body.response_json)
-    return res.send({file_url:responseUrl})
+    try{
+        const responseUrl = await createAndUploadTextFile(req.body.response_json)
+        return res.send({file_url:responseUrl})
+    }catch(error){
+        return res.send({ error: error.message });
+
+    }
+   
 
 
 }
