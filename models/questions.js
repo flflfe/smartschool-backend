@@ -13,6 +13,11 @@ const questionsSchema = new Schema({
     name: String,
   },
 });
+questionsSchema.virtual('question',{
+  ref:'messages',
+  localField:'messageIds',
+  foreignField:'m_id'
+})
 
 const questions = model("questions", questionsSchema);
 

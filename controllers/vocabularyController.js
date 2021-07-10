@@ -5,7 +5,8 @@ export async function getVocabularyList(req, res) {
     const chapterDoc = await chapterModel.findById(req.chapter);
     if (!chapterDoc.VocabularyList)
       return res.send({ message: "Empty Array", data: dataList });
-    const data_list = chapterDoc.VocabilaryList;
+    const data_list = chapterDoc.VocabularyList;
+    console.log(data_list)
     return res.send({ totalData: data_list.length, data: data_list });
   } catch (error) {
     return res.send({ error: error.message });
@@ -36,7 +37,7 @@ export async function deleteVocabularyData(req, res) {
     });
     if (originalLength === dataToKeep.length)
       throw new Error("No such Data to delete");
-    document.VocabilaryList = dataToKeep;
+    document.VocabularyList = dataToKeep;
     await document.save();
     return res
       .status(201)

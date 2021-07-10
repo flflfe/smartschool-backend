@@ -25,11 +25,11 @@ import {
   getRecordingProperty,
 } from "../controllers/recordingsController.js";
 import { createresource } from "../controllers/resourcesController.js";
-import { textFileCreator } from "../services/textFileCreator.js";
 import {
   isSubjectChapterAvailable,
   isSubjectAvailable,
 } from "../middlewares/subjectMiddleware.js";
+import Questions from "../models/questions.js";
 
 const router = Router();
 
@@ -235,6 +235,22 @@ router.post(
     }
   }
 );
+
+
+
+router.get('/questions/:question',auth(),async(req,res,next)=>{
+  try{
+    const questionDoc = await  Questions.findOne({q_id:req.params.question})
+    const populatedData =  await questionDoc.populate('question').execPopulate()
+    return res.send({data:populatedData})
+  }catch(E){
+    console.log(E)
+    return res.send({message:E.message})
+
+  }
+ 
+
+})
 router.use("/classrooms", auth(), classroomsController);
 router.get("/subjects/", auth(), getMysubjects);
 export default router;
