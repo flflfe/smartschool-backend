@@ -3,47 +3,48 @@ import qnamaker from "@azure/cognitiveservices-qnamaker";
 import qnamaker_runtime from "@azure/cognitiveservices-qnamaker-runtime";
 import config from "../config.js";
 import { getEndpointKeys } from "../Utils/query_runtime_key.js";
-
-const { QnA_subscription_key, QnA_endpoint, QnA_runtime_endpoint } = config;
+import Axios from "axios";
+const {
+  QnA_subscription_key,
+  QnA_endpoint,
+  QnA_runtime_endpoint,
+  Resource_Name,
+} = config;
 const creds = new msRest.ApiKeyCredentials({
   inHeader: { "Ocp-Apim-Subscription-Key": QnA_subscription_key },
 });
 const qnaMakerClient = new qnamaker.QnAMakerClient(creds, QnA_endpoint);
 const knowledgeBasekClient = new qnamaker.Knowledgebase(qnaMakerClient);
 
-export const createKnowledgeBase = async (
-  qbname = "QnA Tester",
-  urls = ["https://codekavya.blob.core.windows.net/pdfs/cpp.txt"]
-) => {
-  console.log(urls);
+export const createKB = async (qbname) => {
   const create_kb_payload = {
     name: qbname,
-    qnaList: [],
-    urls,
     files: [
-      /*{
-                fileName: "myfile.md",
-                fileUri: "https://mydomain/myfile.md"
-            }*/
+      {
+        fileName: "oop.docx",
+        fileUri:
+          "https://github.com/codekavya/static-files-test/raw/main/oop.docx",
+        isUnstructured: true,
+      },
     ],
     defaultAnswerUsedForExtraction: "Sorry No answer found.",
     enableHierarchicalExtraction: true,
     language: "English",
   };
-
+  const headers = {
+    "Content-Type": "application/json",
+    "Ocp-Apim-Subscription-Key": QnA_subscription_key,
+  };
   try {
-    const results = await knowledgeBasekClient.create(create_kb_payload);
-
-    if (!results._response.status.toString().startsWith("2")) {
-      console.log(
-        `Create request failed - HTTP status ${results._response.status}`
-      );
-      return;
-    }
-
+    const res = await Axios({
+      method: "post",
+      url: `https://${Resource_Name}.cognitiveservices.azure.com/qnamaker/v5.0-preview.2/knowledgebases/create`,
+      data: create_kb_payload,
+      headers: headers,
+    });
     const operationResult = await wait_for_operation(
       qnaMakerClient,
-      results.operationId
+      res.data.operationId
     );
 
     if (
@@ -57,6 +58,7 @@ export const createKnowledgeBase = async (
       );
       return;
     }
+    console.log(operationResult);
 
     // parse resourceLocation for KB ID
     const kbID = operationResult.resourceLocation.replace(
@@ -65,36 +67,39 @@ export const createKnowledgeBase = async (
     );
 
     return kbID;
-  } catch (E) {
-    console.log(E);
-    return;
+  } catch (err) {
+    console.log(err);
+    return err;
   }
 };
-
 export async function publishKnowledgeBase(kb_id) {
-  console.log(`Publishing knowledge base...`);
+  console.log(`Publishing knowledge base...` + kb_id);
+  try {
+    const results = await knowledgeBasekClient.publish(kb_id);
 
-  const results = await qnaMakerClient.publish(kb_id);
+    if (!results._response.status.toString().startsWith("2")) {
+      console.log(
+        `Publish request failed - HTTP status ${results._response.status}`
+      );
+      return false;
+    }
 
-  if (!results._response.status.toString().startsWith("2")) {
     console.log(
-      `Publish request failed - HTTP status ${results._response.status}`
+      `Publish request succeeded - HTTP status ${results._response.status}`
     );
+
+    return true;
+  } catch (error) {
+    console.log(error);
     return false;
   }
-
-  console.log(
-    `Publish request succeeded - HTTP status ${results._response.status}`
-  );
-
-  return true;
 }
 
 export const generateKBAnswer = async (kb_id, query) => {
-  const EndpointKeys = await getEndpointKeys(qnaMakerClient);
-  if (!EndpointKeys) throw new Error("No Key Available");
+  const EndpointKey = await getEndpointKeys(qnaMakerClient);
+  if (!EndpointKey) throw new Error("No Key Available");
   const queryRuntimeCredentials = new msRest.ApiKeyCredentials({
-    inHeader: { Authorization: "EndpointKey " + EndpointKeys },
+    inHeader: { Authorization: "EndpointKey " + EndpointKey },
   });
   const runtimeClient = new qnamaker_runtime.QnAMakerRuntimeClient(
     queryRuntimeCredentials,

@@ -2,9 +2,10 @@ import express from "express";
 const { Router } = express;
 
 import {
-  createKnowledgeBase,
+  // createKnowledgeBase,
   publishKnowledgeBase,
   generateKBAnswer,
+  createKB,
 } from "../services/qnaMaker.js";
 
 const router = Router();
@@ -13,12 +14,7 @@ router.post("/kb/create", async (req, res, next) => {
   try {
     const kbname = req.body.name;
     const urls = req.body.urls;
-    /**
-              Create Kb with Urls and Files both 
-              File need to be uploaded to the azure blob first and pass the public file url
-            **/
-
-    const kdId = await createKnowledgeBase(kbname);
+    const kdId = await createKB(kbname);
     if (!kdId) throw new Error("Error Creating KB");
     console.log(kdId);
     return res.send({ Id: kdId });
