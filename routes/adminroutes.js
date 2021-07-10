@@ -52,4 +52,8 @@ router.delete(
 );
 router.patch("/user/me", auth(), updateUser);
 router.use("/admin", adminDashboard);
+router.get("/verify-token", auth(), (req, res) =>
+  res.status(200).send({ Auth: true, Status: "Token verified", user: req.user })
+);
+
 export default router;
