@@ -10,6 +10,7 @@ export async function createresource(req, res) {
     name: req.body.name,
     fileUrl: req.body.fileUrl,
     chapter: chapter._id,
+    author: req.user._id,
   });
   try {
     await resource.save();
