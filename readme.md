@@ -13,6 +13,7 @@ These repository is accompanied by the following repositories.
   <!-- Change the `github-readme-stats.anuraghazra1.vercel.app` to `github-readme-stats.vercel.app`  -->
   <img align="center" src="https://github-readme-stats.anuraghazra1.vercel.app/api/pin/?username=codekavya&repo=smartschool-mobile&theme=material-palenight" />
 </a>
+
 # Structure
 ![](images/flow.png)
 
