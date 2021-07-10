@@ -6,7 +6,9 @@ const router = Router();
 
 export async function getchapters(req, res) {
   try {
-    const chapterList = await chapters.find({});
+    const chapterList = await chapters.find({
+      subject: req.params.subject,
+    });
     res.send({ chapters: chapterList });
   } catch (error) {
     console.log(error);
@@ -23,7 +25,10 @@ export async function getchapter(req, res) {
   }
 }
 export async function createchapter(req, res) {
-  const chapter = new chapters(req.body);
+  const chapter = new chapters({
+    name: req.body.name,
+    subject: req.params.subject,
+  });
   try {
     await chapter.save();
     res.send({ chapter });
@@ -53,9 +58,9 @@ export async function updatechapter(req, res) {
     return res.status(500).send({ Error: error });
   }
 }
-router.get("/all", checkRole(["admin"]), getchapters);
+// router.get("/:subject/chapters", getchapters);
 router.get("/:id", getchapter);
-router.post("/", checkRole(["admin"]), createchapter);
+// router.post("/", checkRole(["admin"]), createchapter);
 router.patch("/:id", checkRole(["admin"]), updatechapter);
 router.delete("/:id", checkRole(["admin"]), deletechapter);
 

@@ -11,10 +11,6 @@ const chaptersSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "subjects",
   },
-  date: {
-    default: Date.now(),
-    type: Date,
-  },
   recordings: [
     {
       type: mongoose.Schema.Types.ObjectId,

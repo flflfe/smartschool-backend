@@ -5,36 +5,32 @@ import checkRole from "../auth/checkRole.js";
 const router = Router();
 import { USER_ROLES } from "../Utils/constants.js";
 import classrooms from "../models/classrooms.js";
-export async function getsubjects(req, res) {
-  try {
-    const subjectList = await subjects.find({});
-    res.send({ subjects: subjectList });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({ Error: error });
-  }
-}
+
 export async function getMysubjects(req, res) {
   try {
     let subjectList;
     if (req.user.role === USER_ROLES.TEACHER) {
       subjectList = await subjects
-        .find({ teachers: req.user._id })
+        .find({ teachers: req.user._id }, { chapters: 0 })
         .populate({ path: "classroom", select: ["name"] })
-        .populate({ path: "teachers", select: ["name"] });
+        .populate({ path: "teachers", select: ["Name"] });
     }
     if (req.user.role === USER_ROLES.STUDENT) {
-      const myClassroom = await classrooms.findById(req.user._id);
-      subjectList = await subjects
-        .find({ classroom: myClassroom._id })
-        .populate({ path: "classroom", select: ["name"] })
-        .populate({ path: "teachers", select: ["name"] });
+      const myClassroom = await classrooms.findById(req.user.classroom);
+      if (myClassroom) {
+        subjectList = await subjects
+          .find({ classroom: myClassroom._id }, { chapters: 0 })
+          .populate({ path: "classroom", select: ["name"] })
+          .populate({ path: "teachers", select: ["Name"] });
+      } else {
+        subjectList = [];
+      }
     }
     if (req.user.role === USER_ROLES.SUPER_ADMIN) {
       subjectList = await subjects
-        .find({})
+        .find({}, { chapters: 0 })
         .populate({ path: "classroom", select: ["name"] })
-        .populate({ path: "teachers", select: ["name"] });
+        .populate({ path: "teachers", select: ["Name"] });
     }
     res.send({ subjects: subjectList });
   } catch (error) {
@@ -83,7 +79,6 @@ export async function updatesubject(req, res) {
     return res.status(500).send({ Error: error });
   }
 }
-router.get("/all", checkRole(["admin"]), getsubjects);
 router.get("/", getMysubjects);
 router.get("/:id", getsubject);
 router.post("/", checkRole(["admin"]), createsubject);
