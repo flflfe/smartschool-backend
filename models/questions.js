@@ -3,7 +3,7 @@ const { Schema: _Schema, model } = mongoose;
 const Schema = _Schema;
 
 const questionsSchema = new Schema({
-  q_id: { type: Number, unique: false },
+  q_id: { type: Number, unique: true },
   text: String,
   type: { type: Number },
   score: Number,

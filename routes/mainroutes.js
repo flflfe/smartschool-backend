@@ -7,6 +7,8 @@ import {
   getchapters,
   createchapter,
   getchapter,
+  transcriptToTextFile,
+  createKnowledgeBase,
 } from "../controllers/chapterController.js";
 import {
   createsubject,
@@ -248,9 +250,9 @@ router.get('/questions/:question',auth(),async(req,res,next)=>{
     return res.send({message:E.message})
 
   }
- 
-
-})
+});
 router.use("/classrooms", auth(), classroomsController);
 router.get("/subjects/", auth(), getMysubjects);
+router.get("/test", () => transcriptToTextFile(["60e6e052020b7c0638a8f881"]));
+router.post("/chapters/:chapter/createChatBot", createKnowledgeBase);
 export default router;
