@@ -6,6 +6,8 @@ import bcryptjs from "bcryptjs";
 const { compare, hash } = bcryptjs;
 import jwt from "jsonwebtoken";
 const { sign } = jwt;
+import config from "../config.js";
+const { jwtsigninKey } = config;
 
 const userSchema = new Schema(
   {
@@ -74,7 +76,7 @@ const userSchema = new Schema(
 //Generate Token FOR ADMINISTRATIVE PURPOSE
 userSchema.methods.getToken = async function () {
   const user = this;
-  const token = sign({ _id: user._id.toString() }, "thisisdemokey");
+  const token = sign({ _id: user._id.toString() }, jwtsigninKey);
   user.tokens = user.tokens.concat({ token });
   await user.save();
   return token;
