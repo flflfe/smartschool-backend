@@ -59,6 +59,7 @@ router.post("/upload/files", fileUploadStrategy, async(req, res) => {
 });
 
 router.post("/upload/videos", videoUploadStrategy, async(req, res) => {
+    if(!req.file)throw new Error('Please select any video file')
         try {
             const upload = await uploadFileToAzure(req.file, UPLOAD_TYPE.AZURE_UPLOAD_VIDEOS)
             return res.send({ Message: "Video Uploaded Sucessfully", Response: upload })

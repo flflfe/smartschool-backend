@@ -3,7 +3,7 @@ const { Schema: _Schema, model } = mongoose;
 const Schema = _Schema;
 
 const topicsSchema = new Schema({
-  t_id: { type: Number, unique: false },
+  t_id: { type: Number, unique: true },
   text: String,
   type: { type: String },
   messageIds: [String],

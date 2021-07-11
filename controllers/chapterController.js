@@ -4,6 +4,10 @@ import chapters from "../models/chapters.js";
 import subjects from "../models/subjects.js";
 
 import checkRole from "../auth/checkRole.js";
+import recordings from "../models/recordings.js";
+import { createAndUploadTextFile } from "../services/textFileCreator.js";
+import { createKB } from "../services/qnaMaker.js";
+import config from "../config.js";
 const router = Router();
 
 export async function getchapters(req, res) {
@@ -71,6 +75,61 @@ export async function updatechapter(req, res) {
     return res.status(500).send({ Error: error });
   }
 }
+export const transcriptToTextFile = async (recordingsList) => {
+  let transcriptText = "";
+  for (const recordingId of recordingsList) {
+    const transcripts = await recordings
+      .findOne({ _id: recordingId }, { transcript: 1 })
+      .populate({ path: "transcript" });
+    transcripts.transcript.sort((a, b) => {
+      a.startTime - b.startTime;
+    });
+    transcripts.transcript.forEach((message) => {
+      // console.log(message.text);
+      transcriptText += message.text + "\n";
+    });
+  }
+  return transcriptText;
+};
+
+export const createKnowledgeBase = async (req, res) => {
+  const chapterId = req.params.chapter;
+  const chapterObj = await chapters.findOne({ _id: chapterId }, { name: 1 });
+  if (!chapterObj) {
+    return res.status(400).send({ Error: "Invalid Chapter Id" });
+  }
+  const { recordingsId, resourcesArray } = req.body;
+  const textContent = await transcriptToTextFile(recordingsId);
+  const textFileUrl = await createAndUploadTextFile(textContent, chapterId);
+  const resourceFiles =
+    (resourcesArray &&
+      resourcesArray.length &&
+      resourcesArray.map((resource) => {
+        const fileExt = resource.fileUrl.match(".(txt|docx|pdf|doc)$")[0];
+        return {
+          fileName: `${resource.name}${fileExt}`,
+          fileUri: resource.fileUrl,
+          isUnstructured: true,
+        };
+      })) ||
+    [];
+  const files = [
+    {
+      fileName: `${chapterObj.name}.docx`,
+      fileUri: textFileUrl,
+      isUnstructured: true,
+    },
+    ...resourceFiles,
+  ];
+  console.log(files);
+  const kbId = await createKB(chapterObj.name, files);
+  chapterObj.isPublished = false;
+  chapterObj.chatBotId = kbId;
+  chapterObj.chatbotSubKey = config.QnA_subscription_key;
+  chapterObj.save();
+  res.send(chapterObj);
+};
+
 // router.get("/:subject/chapters", getchapters);
 router.get("/:id", getchapter);
 // router.post("/", checkRole(["admin"]), createchapter);

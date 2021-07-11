@@ -115,7 +115,12 @@ export const requestProcessing = async (req, res) => {
     if (recording.isRequested) {
       return res.status(409).send({ Error: "Already Requested" });
     }
-    const processingStatus = await submitVideo({ url: recording.recordingUrl });
+    const chapter = await chapters.findOne({ _id: recording.chapter });
+    const customVocabulary = chapter.VocabularyList.map((obj) => obj.data);
+    const processingStatus = await submitVideo({
+      url: recording.recordingUrl,
+      customVocabulary,
+    });
     if (processingStatus?.error) {
       throw new Error(processingStatus.data.message);
     }

@@ -7,6 +7,8 @@ import {
   getchapters,
   createchapter,
   getchapter,
+  transcriptToTextFile,
+  createKnowledgeBase,
 } from "../controllers/chapterController.js";
 import {
   createsubject,
@@ -25,11 +27,11 @@ import {
   getRecordingProperty,
 } from "../controllers/recordingsController.js";
 import { createresource } from "../controllers/resourcesController.js";
-import { textFileCreator } from "../services/textFileCreator.js";
 import {
   isSubjectChapterAvailable,
   isSubjectAvailable,
 } from "../middlewares/subjectMiddleware.js";
+import Questions from "../models/questions.js";
 
 const router = Router();
 
@@ -235,6 +237,22 @@ router.post(
     }
   }
 );
+
+
+
+router.get('/questions/:question',auth(),async(req,res,next)=>{
+  try{
+    const questionDoc = await  Questions.findOne({_id:req.params.question}).populate({model:'questions',path:'question',type:String})
+    console.log(questionDoc)
+    return res.send({data:questionDoc})
+  }catch(E){
+    console.log(E)
+    return res.send({message:E.message})
+
+  }
+});
 router.use("/classrooms", auth(), classroomsController);
 router.get("/subjects/", auth(), getMysubjects);
+router.get("/test", () => transcriptToTextFile(["60e6e052020b7c0638a8f881"]));
+router.post("/chapters/:chapter/createChatBot", createKnowledgeBase);
 export default router;
