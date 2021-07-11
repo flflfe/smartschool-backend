@@ -5,7 +5,7 @@ import path from "path";
 
 const __dirname = path.resolve();
 const app = express();
-const port = process.env.port || 3000;
+const port = process.env.port || 4000;
 
 import mainRoutes from "./routes/mainroutes.js";
 import adminRoutes from "./routes/adminroutes.js";

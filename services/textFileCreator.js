@@ -1,11 +1,6 @@
-import getStream from "into-stream";
-import {
-  createTextFileName,
-  getBlobName,
-} from "../Utils/randon_name_generater.js";
+import PDFDocument from "pdfkit";
 import blobServiceClient from "../azure/connection.js";
-import { UPLOAD_TYPE } from "../Utils/constants.js";
-
+import getStream from "into-stream";
 const ONE_MEGABYTE = 1024 * 1024;
 
 const uploadOptions = {
@@ -17,22 +12,28 @@ export const createAndUploadTextFile = async (stringData, fileName) => {
   try {
     const containerName = "transcript";
     const containerClient = blobServiceClient.getContainerClient(containerName);
-    const blobName = `${fileName}.docx`;
-    const stream = getStream(Buffer.from(stringData, "utf8"));
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    // pipe the document to a blob
+    const doc = new PDFDocument();
+    doc.text(stringData);
+    doc.end();
+    const blockBlobClient = containerClient.getBlockBlobClient(
+      `${fileName}.pdf`
+    );
     await blockBlobClient.uploadStream(
-      stream,
+      doc,
       uploadOptions.bufferSize,
       uploadOptions.maxBuffers,
       {
         blobHTTPHeaders: {
-          blobContentType: "application/msword",
+          blobContentType: "application/pdf",
         },
       }
     );
+    console.log(blockBlobClient.url);
     return blockBlobClient.url;
   } catch (err) {
     console.log(err);
+    throw new Error(err);
   }
 };
 

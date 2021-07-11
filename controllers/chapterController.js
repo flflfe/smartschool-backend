@@ -89,45 +89,51 @@ export const transcriptToTextFile = async (recordingsList) => {
       transcriptText += message.text + "\n";
     });
   }
+  console.log("Here");
   return transcriptText;
 };
 
 export const createKnowledgeBase = async (req, res) => {
   const chapterId = req.params.chapter;
-  const chapterObj = await chapters.findOne({ _id: chapterId }, { name: 1 });
-  if (!chapterObj) {
-    return res.status(400).send({ Error: "Invalid Chapter Id" });
+  try {
+    const chapterObj = await chapters.findOne({ _id: chapterId }, { name: 1 });
+    if (!chapterObj) {
+      return res.status(400).send({ Error: "Invalid Chapter Id" });
+    }
+    const { recordingsId, resourcesArray } = req.body;
+    const textContent = await transcriptToTextFile(recordingsId);
+    const textFileUrl = await createAndUploadTextFile(textContent, chapterId);
+    console.log(textFileUrl);
+    const resourceFiles =
+      (resourcesArray &&
+        resourcesArray.length &&
+        resourcesArray.map((resource) => {
+          const fileExt = resource.fileUrl.match(".(txt|docx|pdf|doc)$")[0];
+          return {
+            fileName: `${resource.name}${fileExt}`,
+            fileUri: resource.fileUrl,
+            isUnstructured: true,
+          };
+        })) ||
+      [];
+    const files = [
+      {
+        fileName: `${chapterObj.name}.pdf`,
+        fileUri: textFileUrl,
+        isUnstructured: true,
+      },
+      ...resourceFiles,
+    ];
+    console.log(files);
+    const kbId = await createKB(chapterObj.name, files);
+    chapterObj.isPublished = false;
+    chapterObj.chatBotId = kbId;
+    chapterObj.chatbotSubKey = config.QnA_subscription_key;
+    chapterObj.save();
+    res.send(chapterObj);
+  } catch (error) {
+    res.send({ error: error.message });
   }
-  const { recordingsId, resourcesArray } = req.body;
-  const textContent = await transcriptToTextFile(recordingsId);
-  const textFileUrl = await createAndUploadTextFile(textContent, chapterId);
-  const resourceFiles =
-    (resourcesArray &&
-      resourcesArray.length &&
-      resourcesArray.map((resource) => {
-        const fileExt = resource.fileUrl.match(".(txt|docx|pdf|doc)$")[0];
-        return {
-          fileName: `${resource.name}${fileExt}`,
-          fileUri: resource.fileUrl,
-          isUnstructured: true,
-        };
-      })) ||
-    [];
-  const files = [
-    {
-      fileName: `${chapterObj.name}.docx`,
-      fileUri: textFileUrl,
-      isUnstructured: true,
-    },
-    ...resourceFiles,
-  ];
-  console.log(files);
-  const kbId = await createKB(chapterObj.name, files);
-  chapterObj.isPublished = false;
-  chapterObj.chatBotId = kbId;
-  chapterObj.chatbotSubKey = config.QnA_subscription_key;
-  chapterObj.save();
-  res.send(chapterObj);
 };
 
 // router.get("/:subject/chapters", getchapters);
