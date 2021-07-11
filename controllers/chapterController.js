@@ -6,8 +6,10 @@ import subjects from "../models/subjects.js";
 import checkRole from "../auth/checkRole.js";
 import recordings from "../models/recordings.js";
 import { createAndUploadTextFile } from "../services/textFileCreator.js";
-import { createKB } from "../services/qnaMaker.js";
+import { createKB, publishKnowledgeBase } from "../services/qnaMaker.js";
 import config from "../config.js";
+import { generateKBAnswer } from "./../services/qnaMaker.js";
+import { getAnswer } from "../Utils/answerer.js";
 const router = Router();
 
 export async function getchapters(req, res) {
@@ -126,13 +128,27 @@ export const createKnowledgeBase = async (req, res) => {
     ];
     console.log(files);
     const kbId = await createKB(chapterObj.name, files);
-    chapterObj.isPublished = false;
+    chapterObj.isPublished = await publishKnowledgeBase(kbId);
     chapterObj.chatBotId = kbId;
     chapterObj.chatbotSubKey = config.QnA_subscription_key;
     chapterObj.save();
-    res.send(chapterObj);
+    return res.send(chapterObj);
   } catch (error) {
-    res.send({ error: error.message });
+    res.status(500).send({ error: error.message });
+  }
+};
+
+export const askQuestion = async (req, res) => {
+  try {
+    const chapter = req.params.chapter;
+    const { question } = req.body;
+    const chapterObj = await chapters.findOne({ _id: chapter });
+    const chatBotId = chapterObj.chatBotId;
+    console.log(chatBotId);
+    const answer = await getAnswer(question, chatBotId);
+    res.send({ answer });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
   }
 };
 

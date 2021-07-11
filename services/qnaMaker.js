@@ -102,9 +102,9 @@ export const generateKBAnswer = async (kb_id, query) => {
   console.log(`Querying knowledge base...`);
 
   const requestQuery = await runtimeClient.runtime.generateAnswer(kb_id, query);
-  console.log(JSON.stringify(requestQuery));
   return requestQuery;
 };
+
 const wait_for_operation = async (qnaClient, operation_id) => {
   let state = "NotStarted";
   let operationResult = undefined;
